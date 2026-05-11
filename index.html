@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Amogh Marathe | Senior Technical Product Manager</title>
 
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KNT1H74BZQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-KNT1H74BZQ', {
+    page_title: 'Amogh Marathe Portfolio',
+    page_location: window.location.href
+  });
+</script>
+
 <!-- Open Graph / LinkedIn preview -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://amogh13marathe.github.io">
@@ -25,7 +37,6 @@
 <meta name="description" content="Senior Technical PM with 8 years building monetized API platforms, self-serve developer tools, and AI-powered decisioning engines. $800K ARR, $1.45M in savings.">
 <meta name="author" content="Amogh Marathe">
 <style>
-  
   :root {
     --navy: #0f172a;
     --navy2: #1e293b;
@@ -257,7 +268,7 @@
       <p class="hero-sub">Senior Technical PM with 8 years building monetized API platforms, self-serve developer tools, and AI-powered decisioning engines at enterprise scale.</p>
       <div class="hero-cta">
         <a href="#casestudies" class="btn-primary">View Featured Work</a>
-        <a href="Amogh_Marathe_Resume.pdf" download class="btn-secondary">
+        <a href="Amogh_Marathe_Resume.pdf" download class="btn-secondary" onclick="gtag('event','resume_download',{event_category:'engagement',event_label:'hero_button'})">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:.4rem"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Download Resume
         </a>
@@ -545,11 +556,11 @@
         <span class="contact-role-chip">AI / Agentic Products</span>
       </div>
       <div class="contact-links">
-        <a href="mailto:amogh13marathe@gmail.com" class="contact-link">
+        <a href="mailto:amogh13marathe@gmail.com" class="contact-link" onclick="gtag('event','email_click',{event_category:'engagement',event_label:'contact_section'})">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           Email Me
         </a>
-        <a href="https://linkedin.com/in/amoghmarathe" target="_blank" rel="noopener" class="contact-link">
+        <a href="https://linkedin.com/in/amoghmarathe" target="_blank" rel="noopener" class="contact-link" onclick="gtag('event','linkedin_click',{event_category:'engagement',event_label:'contact_section'})">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
           Connect on LinkedIn
         </a>
@@ -592,6 +603,43 @@
     c.style.transition = 'opacity .6s ease, transform .6s ease';
     observer.observe(c);
   });
+
+  // GA4 — track which sections visitors reach
+  const sectionLabels = {
+    hero: 'Hero',
+    stats: 'Stats',
+    about: 'About',
+    casestudies: 'Featured Work',
+    partners: 'Partners',
+    experience: 'Experience',
+    skills: 'Skills',
+    contact: 'Contact'
+  };
+  const sectionsSeen = new Set();
+  const sectionObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !sectionsSeen.has(e.target.id)) {
+        sectionsSeen.add(e.target.id);
+        gtag('event', 'section_viewed', {
+          event_category: 'scroll_depth',
+          event_label: sectionLabels[e.target.id] || e.target.id
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('section[id]').forEach(s => sectionObserver.observe(s));
+
+  // GA4 — track UTM source on load
+  const params = new URLSearchParams(window.location.search);
+  const utmSource = params.get('utm_source');
+  if (utmSource) {
+    gtag('event', 'utm_visit', {
+      event_category: 'traffic_source',
+      event_label: utmSource,
+      utm_medium: params.get('utm_medium') || 'unknown',
+      utm_campaign: params.get('utm_campaign') || 'unknown'
+    });
+  }
 </script>
 </body>
 </html>
