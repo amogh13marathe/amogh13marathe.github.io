@@ -232,6 +232,19 @@
   /* ── FOOTER ── */
   footer { background:var(--navy); border-top:1px solid var(--border); padding:1.5rem 5vw; text-align:center; color:var(--muted); font-size:.82rem; }
 
+  /* ── HAMBURGER ── */
+  .hamburger {
+    display:none; flex-direction:column; gap:5px; cursor:pointer;
+    background:none; border:none; padding:4px;
+  }
+  .hamburger span {
+    display:block; width:24px; height:2px;
+    background:var(--white); border-radius:2px; transition:.3s;
+  }
+  .hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity:0; }
+  .hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+
   /* ── RESPONSIVE ── */
   @media(max-width:900px){
     .hero-inner { grid-template-columns:1fr; }
@@ -240,7 +253,21 @@
     .cases-grid { grid-template-columns:1fr; }
     .about-grid { grid-template-columns:1fr; }
     .skills-grid { grid-template-columns:1fr; }
-    .nav-links { display:none; }
+    .hamburger { display:flex; }
+    .nav-links {
+      display:none; flex-direction:column; gap:0;
+      position:absolute; top:64px; left:0; right:0;
+      background:rgba(15,23,42,0.98); backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+      padding:.5rem 0;
+    }
+    .nav-links.open { display:flex; }
+    .nav-links li { width:100%; }
+    .nav-links a {
+      display:block; padding:.9rem 5vw;
+      font-size:1rem; border-bottom:1px solid var(--border);
+    }
+    .nav-links li:last-child a { border-bottom:none; }
   }
 </style>
 </head>
@@ -249,14 +276,17 @@
 <!-- NAV -->
 <nav>
   <a href="#hero" class="nav-brand">Amogh <span>Marathe</span></a>
-  <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#casestudies">Featured Work</a></li>
-    <li><a href="#partners">Partners</a></li>
-    <li><a href="#experience">Experience</a></li>
-    <li><a href="#skills">Skills</a></li>
-    <li><a href="#contact">Contact</a></li>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about" onclick="closeMenu()">About</a></li>
+    <li><a href="#casestudies" onclick="closeMenu()">Featured Work</a></li>
+    <li><a href="#partners" onclick="closeMenu()">Partners</a></li>
+    <li><a href="#experience" onclick="closeMenu()">Experience</a></li>
+    <li><a href="#skills" onclick="closeMenu()">Skills</a></li>
+    <li><a href="#contact" onclick="closeMenu()">Contact</a></li>
   </ul>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <!-- HERO -->
@@ -574,6 +604,16 @@
 </footer>
 
 <script>
+  // Hamburger menu
+  function toggleMenu() {
+    document.getElementById('navLinks').classList.toggle('open');
+    document.getElementById('hamburger').classList.toggle('open');
+  }
+  function closeMenu() {
+    document.getElementById('navLinks').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+  }
+
   // Smooth active nav highlight
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.nav-links a');
