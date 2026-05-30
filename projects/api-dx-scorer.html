@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API DX Scorecard — Amogh Marathe</title>
+<meta name="description" content="A PM tool that grades API documentation against a six-dimension rubric modeled on Stripe, Plaid, and Twilio. Built by Amogh Marathe.">
+<meta property="og:title" content="API DX Scorecard — Amogh Marathe">
+<meta property="og:description" content="Grade any API doc against the Stripe/Plaid/Twilio bar. Six weighted dimensions, evidence, and prioritized fixes. Built with Gradio + Groq (free stack).">
+<meta property="og:url" content="https://amogh13marathe.github.io/projects/api-dx-scorer">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KNT1H74BZQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-KNT1H74BZQ');
+</script>
+
+<style>
+  :root {
+    --navy: #0f172a;
+    --navy2: #1e293b;
+    --accent: #3b82f6;
+    --accent2: #0ea5e9;
+    --light: #f8fafc;
+    --muted: #94a3b8;
+    --border: #334155;
+    --white: #ffffff;
+    --green: #10b981;
+    --card: #1e293b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body { background:var(--navy); color:var(--white); font-family:'Segoe UI',system-ui,-apple-system,sans-serif; line-height:1.6; }
+
+  nav {
+    position:fixed; top:0; width:100%; z-index:100;
+    background:rgba(15,23,42,0.95); backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+    display:flex; justify-content:space-between; align-items:center;
+    padding:0 5vw; height:64px;
+  }
+  .nav-brand { font-weight:700; font-size:1.1rem; color:var(--white); text-decoration:none; letter-spacing:.5px; }
+  .nav-brand span { color:var(--accent); }
+  .nav-back { display:flex; align-items:center; gap:.5rem; color:var(--muted); text-decoration:none; font-size:.9rem; font-weight:500; transition:.2s; }
+  .nav-back:hover { color:var(--white); }
+
+  .hero-section {
+    padding:120px 5vw 60px;
+    background: radial-gradient(ellipse at 60% 40%, rgba(59,130,246,0.1) 0%, transparent 60%);
+  }
+  .hero-inner { max-width:900px; margin:0 auto; }
+  .breadcrumb { display:flex; align-items:center; gap:.5rem; color:var(--muted); font-size:.82rem; margin-bottom:1.5rem; }
+  .breadcrumb a { color:var(--accent2); text-decoration:none; }
+  .breadcrumb a:hover { text-decoration:underline; }
+  .project-tag { display:inline-block; background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.3); color:var(--accent2); font-size:.75rem; font-weight:700; padding:.3rem .9rem; border-radius:999px; letter-spacing:.8px; text-transform:uppercase; margin-bottom:1rem; }
+  h1 { font-size:clamp(2rem,4vw,3rem); font-weight:800; line-height:1.15; margin-bottom:1rem; }
+  h1 span { background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero-desc { font-size:1.1rem; color:#cbd5e1; max-width:640px; line-height:1.8; margin-bottom:2rem; }
+  .hero-cta { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:2.5rem; }
+  .btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; padding:.75rem 1.8rem; border-radius:8px; text-decoration:none; font-weight:600; font-size:.95rem; transition:.2s; box-shadow:0 4px 20px rgba(59,130,246,0.35); }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(59,130,246,0.5); }
+  .btn-secondary { background:transparent; color:var(--white); padding:.75rem 1.8rem; border-radius:8px; text-decoration:none; font-weight:600; font-size:.95rem; border:1.5px solid var(--border); transition:.2s; }
+  .btn-secondary:hover { border-color:var(--accent); color:var(--accent); }
+
+  .meta-row { display:flex; gap:2rem; flex-wrap:wrap; }
+  .meta-badge { display:flex; flex-direction:column; gap:.2rem; }
+  .meta-label { font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; font-weight:600; }
+  .meta-value { font-size:.9rem; color:#e2e8f0; font-weight:500; }
+
+  /* EMBED */
+  .embed-section { padding:0 5vw 60px; }
+  .embed-inner { max-width:900px; margin:0 auto; }
+  .embed-wrapper {
+    border:1px solid var(--border); border-radius:16px; overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  }
+  .embed-header {
+    background:var(--navy2); padding:12px 20px;
+    display:flex; align-items:center; gap:8px;
+    border-bottom:1px solid var(--border);
+  }
+  .embed-dot { width:12px; height:12px; border-radius:50%; }
+  .embed-url { color:var(--muted); font-size:.8rem; margin-left:8px; font-family:monospace; }
+  iframe {
+    width:100%; height:720px; border:none; display:block;
+    background:#fff;
+  }
+
+  /* CASE STUDY */
+  .case-section { padding:60px 5vw; }
+  .case-inner { max-width:900px; margin:0 auto; }
+  .section-tag { color:var(--accent2); font-size:.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:.5rem; }
+  h2 { font-size:clamp(1.4rem,2.5vw,2rem); font-weight:800; margin-bottom:1rem; }
+  .case-body { color:#cbd5e1; line-height:1.85; }
+  .case-body p { margin-bottom:1rem; }
+  .case-body strong { color:var(--white); }
+
+  .rubric-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:2rem 0; }
+  .rubric-card { background:var(--navy2); border:1px solid var(--border); border-radius:10px; padding:1.25rem; }
+  .rubric-name { font-size:.82rem; font-weight:700; color:var(--accent2); text-transform:uppercase; letter-spacing:.5px; margin-bottom:.3rem; }
+  .rubric-weight { font-size:1.3rem; font-weight:800; color:var(--white); }
+  .rubric-def { font-size:.78rem; color:var(--muted); margin-top:.4rem; line-height:1.5; }
+
+  .stack-row { display:flex; flex-wrap:wrap; gap:.6rem; margin:1.5rem 0; }
+  .stack-chip { background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2); color:#93c5fd; font-size:.8rem; font-weight:600; padding:.3rem .8rem; border-radius:6px; }
+
+  .insight-list { list-style:none; margin:1.5rem 0; }
+  .insight-list li { display:flex; align-items:flex-start; gap:.75rem; color:#cbd5e1; font-size:.9rem; margin-bottom:.75rem; line-height:1.65; }
+  .insight-list li::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--accent); margin-top:.45rem; flex-shrink:0; }
+
+  .divider { border:none; border-top:1px solid var(--border); margin:3rem 0; }
+
+  footer { background:var(--navy); border-top:1px solid var(--border); padding:1.5rem 5vw; text-align:center; color:var(--muted); font-size:.82rem; }
+  footer a { color:var(--accent2); text-decoration:none; }
+
+  @media(max-width:700px) {
+    .rubric-grid { grid-template-columns:1fr 1fr; }
+    iframe { height:560px; }
+    .meta-row { gap:1.2rem; }
+  }
+  @media(max-width:480px) {
+    .rubric-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-brand">Amogh <span>Marathe</span></a>
+  <a href="/#tools" class="nav-back">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    Back to portfolio
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="hero-section">
+  <div class="hero-inner">
+    <div class="breadcrumb">
+      <a href="/">Amogh Marathe</a>
+      <span>›</span>
+      <a href="/#tools">PM Tools</a>
+      <span>›</span>
+      <span>API DX Scorecard</span>
+    </div>
+    <div class="project-tag">PM Tool · Open Source</div>
+    <h1>API DX <span>Scorecard</span></h1>
+    <p class="hero-desc">A PM-built tool that grades public API documentation against the bar developers expect from best-in-class API companies. Paste a URL, get a weighted score across six dimensions, with evidence and a prioritized fix list ready for your next sprint.</p>
+    <div class="hero-cta">
+      <a href="https://huggingface.co/spaces/amogh-pm/api-dx-scorer" target="_blank" rel="noopener" class="btn-primary" onclick="gtag('event','tool_open',{event_category:'tools',event_label:'api_dx_scorer_hero'})">
+        Try the Tool ↗
+      </a>
+      <a href="https://github.com/amogh13marathe/api-dx-scorer" target="_blank" rel="noopener" class="btn-secondary">
+        View on GitHub
+      </a>
+    </div>
+    <div class="meta-row">
+      <div class="meta-badge"><span class="meta-label">Built with</span><span class="meta-value">Gradio · Groq · Llama 3.3 70B</span></div>
+      <div class="meta-badge"><span class="meta-label">Cost to run</span><span class="meta-value">$0 — fully free stack</span></div>
+      <div class="meta-badge"><span class="meta-label">Hosted on</span><span class="meta-value">HuggingFace Spaces</span></div>
+      <div class="meta-badge"><span class="meta-label">Rubric modeled on</span><span class="meta-value">Stripe · Plaid · Twilio · GitHub</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- EMBED -->
+<section class="embed-section">
+  <div class="embed-inner">
+    <div class="embed-wrapper">
+      <div class="embed-header">
+        <div class="embed-dot" style="background:#ef4444"></div>
+        <div class="embed-dot" style="background:#f59e0b"></div>
+        <div class="embed-dot" style="background:#22c55e"></div>
+        <span class="embed-url">huggingface.co/spaces/amogh-pm/api-dx-scorer</span>
+      </div>
+      <iframe
+        src="https://amogh-pm-api-dx-scorer.hf.space"
+        title="API DX Scorecard"
+        loading="lazy"
+        allow="clipboard-write"
+      ></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- CASE STUDY -->
+<section class="case-section">
+  <div class="case-inner">
+
+    <div class="section-tag">Why I built this</div>
+    <h2>The problem API PMs don't talk about</h2>
+    <div class="case-body">
+      <p>In my work scaling SquareTrade's data ingestion platform to 80+ global retail partners, the most consistent friction point wasn't the API design itself — it was the documentation. Partners would submit incorrect payloads, misinterpret optional vs. required fields, and hit undocumented error states. Every gap in the docs became a support ticket or a delayed integration.</p>
+      <p>The industry has no consistent standard for what "good" API documentation looks like. Stripe is widely regarded as the gold bar, but no PM tooling exists to objectively measure the gap between any given doc and that bar — or to generate a prioritized fix list that maps directly to sprint work.</p>
+      <p>I built the API DX Scorecard to solve that. It's a tool I'd want to run against my own API docs before shipping, and against a competitor's before a competitive review.</p>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section-tag">The rubric</div>
+    <h2>Six dimensions, weighted by developer impact</h2>
+    <div class="case-body">
+      <p>The scoring rubric is based on what drives time-to-first-call — the single best predictor of developer activation. Weights are set by what matters most to a developer trying to integrate:</p>
+    </div>
+
+    <div class="rubric-grid">
+      <div class="rubric-card">
+        <div class="rubric-name">Clarity</div>
+        <div class="rubric-weight">20%</div>
+        <div class="rubric-def">Can a developer understand what this endpoint does within 30 seconds of landing?</div>
+      </div>
+      <div class="rubric-card">
+        <div class="rubric-name">Completeness</div>
+        <div class="rubric-weight">20%</div>
+        <div class="rubric-def">Every field, type, default, and response shape — no guessing required.</div>
+      </div>
+      <div class="rubric-card">
+        <div class="rubric-name">Example Quality</div>
+        <div class="rubric-weight">20%</div>
+        <div class="rubric-def">Copy, paste, get a successful response on the first try.</div>
+      </div>
+      <div class="rubric-card">
+        <div class="rubric-name">Error Handling</div>
+        <div class="rubric-weight">15%</div>
+        <div class="rubric-def">What can go wrong, how errors are shaped, and how to recover.</div>
+      </div>
+      <div class="rubric-card">
+        <div class="rubric-name">Onboarding Friction</div>
+        <div class="rubric-weight">15%</div>
+        <div class="rubric-def">Minutes to first successful authenticated call for a brand-new developer.</div>
+      </div>
+      <div class="rubric-card">
+        <div class="rubric-name">Consistency</div>
+        <div class="rubric-weight">10%</div>
+        <div class="rubric-def">HTTP verbs, naming conventions, pagination — follows the patterns a developer expects.</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section-tag">Technical design</div>
+    <h2>Fully free stack, production-quality output</h2>
+    <div class="case-body">
+      <p>A deliberate constraint: build it on tools any PM or startup can afford. No paid APIs, no proprietary infra. The scoring model needed to be strong enough to catch real documentation gaps, not produce generic feedback.</p>
+    </div>
+    <div class="stack-row">
+      <span class="stack-chip">Gradio 5 — UI framework</span>
+      <span class="stack-chip">Groq — LLM inference API (free tier)</span>
+      <span class="stack-chip">Llama 3.3 70B — scoring model</span>
+      <span class="stack-chip">BeautifulSoup — URL doc scraping</span>
+      <span class="stack-chip">HuggingFace Spaces — hosting ($0)</span>
+      <span class="stack-chip">Python — everything else</span>
+    </div>
+    <div class="case-body">
+      <p>The system prompt instructs the model to behave as a Senior Staff PM for Developer Experience — evaluating docs with evidence, not opinion. JSON-mode output enforces structured scores, which then render as a visual HTML scorecard with color-coded bars, letter grades, and export formats for Jira and GitHub Issues.</p>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section-tag">Key product decisions</div>
+    <h2>What I prioritized and why</h2>
+    <ul class="insight-list">
+      <li><strong>Evidence-based scores over vibes.</strong> Each dimension requires the model to quote or paraphrase the actual documentation. This prevents hallucinated praise and makes the output directly actionable.</li>
+      <li><strong>Prioritized fix list, not a bug report.</strong> The output is structured as P0/P1/P2 improvements with "why it matters" reasoning — ready to drop into a sprint without editing.</li>
+      <li><strong>Side-by-side comparison mode.</strong> The most common use case for competitive review is comparing your docs against a competitor's. Built as a native tab, not an afterthought.</li>
+      <li><strong>Jira + GitHub export.</strong> The scorecard generates properly formatted Jira wiki markup and GitHub issue markdown with collapsible evidence sections — PM to engineer handoff in one click.</li>
+      <li><strong>Don't grade on a curve.</strong> The system prompt explicitly tells the model that most public API docs score 5–7, and Stripe-tier is rare. This prevents the LLM's default tendency toward flattery.</li>
+    </ul>
+
+    <hr class="divider">
+
+    <div class="section-tag">Relevance to my PM work</div>
+    <h2>What this demonstrates</h2>
+    <div class="case-body">
+      <p>This tool reflects how I think about developer experience as a PM discipline: the documentation is the product interface for developers, and it deserves the same rigor as a UI design review. At SquareTrade, improving API docs and the testing sandbox was one of the highest-leverage investments in the partner onboarding pipeline — it drove a <strong>40% reduction in integration time</strong> without touching the API itself.</p>
+      <p>Building this also required the same skills I apply in production: designing a scoring rubric with defensible weightings, writing a structured system prompt that produces consistent output, and deciding what format makes the output most useful to the people who receive it (a PM handing off to an engineer).</p>
+    </div>
+
+    <div style="margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap;">
+      <a href="https://huggingface.co/spaces/amogh-pm/api-dx-scorer" target="_blank" rel="noopener" class="btn-primary" onclick="gtag('event','tool_open',{event_category:'tools',event_label:'api_dx_scorer_bottom'})">
+        Try the Tool ↗
+      </a>
+      <a href="/#tools" class="btn-secondary">Back to Portfolio</a>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  Built by <a href="/">Amogh Marathe</a> &nbsp;&middot;&nbsp; Denver, CO &nbsp;&middot;&nbsp; 2026
+</footer>
+
+</body>
+</html>

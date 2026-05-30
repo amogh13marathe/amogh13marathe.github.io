@@ -172,7 +172,7 @@
   .case-detail-item::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--accent); margin-top:.45rem; flex-shrink:0; }
 
   /* ── PARTNERS ── */
-  #partners { background:var(--navy); }
+  #partners { background:var(--navy2); }
   .partners-label { text-align:center; color:var(--muted); font-size:.85rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:2rem; }
   .partners-row { display:flex; flex-wrap:wrap; justify-content:center; gap:1.5rem; }
   .partner-chip {
@@ -208,6 +208,22 @@
   .sg-title { font-size:.85rem; font-weight:700; color:var(--accent2); letter-spacing:1px; text-transform:uppercase; margin-bottom:1rem; }
   .sg-items { display:flex; flex-wrap:wrap; gap:.5rem; }
   .sg-item { background:rgba(255,255,255,.04); border:1px solid var(--border); color:#cbd5e1; font-size:.8rem; padding:.25rem .7rem; border-radius:6px; }
+
+  /* ── TOOLS ── */
+  #tools { background:var(--navy2); }
+  .tools-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+  .tool-card {
+    background:var(--navy); border:1px solid var(--border); border-radius:16px;
+    padding:2rem; transition:.2s; position:relative; overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .tool-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--green),var(--accent2)); }
+  .tool-card:hover { border-color:var(--green); transform:translateY(-4px); box-shadow:0 12px 40px rgba(16,185,129,0.12); }
+  .tool-card.placeholder { border-style:dashed; opacity:.45; align-items:center; justify-content:center; text-align:center; min-height:280px; }
+  .tool-card.placeholder::before { display:none; }
+  .tool-stack { display:flex; flex-wrap:wrap; gap:.4rem; margin:1rem 0; }
+  .tool-chip { background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); color:#6ee7b7; font-size:.75rem; font-weight:600; padding:.2rem .6rem; border-radius:5px; }
+  .tool-btns { display:flex; gap:.75rem; margin-top:1.5rem; flex-wrap:wrap; }
 
   /* ── CONTACT ── */
   #contact { background:var(--navy2); text-align:center; }
@@ -251,6 +267,7 @@
     .avatar { width:180px; height:180px; font-size:3.5rem; }
     .stats-grid { grid-template-columns:repeat(2,1fr); }
     .cases-grid { grid-template-columns:1fr; }
+    .tools-grid { grid-template-columns:1fr; }
     .about-grid { grid-template-columns:1fr; }
     .skills-grid { grid-template-columns:1fr; }
     .hamburger { display:flex; }
@@ -282,6 +299,7 @@
     <li><a href="#partners" onclick="closeMenu()">Partners</a></li>
     <li><a href="#experience" onclick="closeMenu()">Experience</a></li>
     <li><a href="#skills" onclick="closeMenu()">Skills</a></li>
+    <li><a href="#tools" onclick="closeMenu()">PM Tools</a></li>
     <li><a href="#contact" onclick="closeMenu()">Contact</a></li>
   </ul>
   <button class="hamburger" id="hamburger" aria-label="Toggle menu" onclick="toggleMenu()">
@@ -293,7 +311,7 @@
 <section id="hero">
   <div class="hero-inner">
     <div>
-<h1>Amogh<br><span>Marathe</span></h1>
+      <h1>Amogh<br><span>Marathe</span></h1>
       <p class="hero-sub">Senior Technical PM with 8 years building monetized API platforms, self-serve developer tools, and AI-powered decisioning engines at enterprise scale.</p>
       <div class="hero-cta">
         <a href="#casestudies" class="btn-primary">View Featured Work</a>
@@ -569,6 +587,52 @@
   </div>
 </section>
 
+<!-- PM TOOLS -->
+<section id="tools">
+  <div class="section-inner">
+    <div class="section-tag">PM Tools</div>
+    <h2 class="section-title">Tools I built to solve real PM problems</h2>
+    <p class="section-sub">Open-source tooling built on a free stack. Each one reflects a gap I ran into doing actual product work.</p>
+    <div class="tools-grid">
+
+      <div class="tool-card">
+        <div class="case-tag">Developer Experience &middot; AI</div>
+        <div class="case-title" style="font-size:1.2rem;">API DX Scorecard</div>
+        <p class="case-desc" style="margin-top:.5rem;">Grades public API documentation against the bar set by Stripe, Plaid, Twilio, and GitHub. Paste a URL, get a weighted score across six dimensions with evidence per dimension, a letter grade, and a prioritized fix list ready to drop into a sprint. Includes side-by-side competitor comparison and one-click export to Jira or GitHub Issues.</p>
+        <div class="tool-stack">
+          <span class="tool-chip">Gradio</span>
+          <span class="tool-chip">Groq</span>
+          <span class="tool-chip">Llama 3.3 70B</span>
+          <span class="tool-chip">HuggingFace Spaces</span>
+          <span class="tool-chip">$0 to run</span>
+        </div>
+        <div class="case-details" style="flex:1;">
+          <div class="case-detail-item">Scores Clarity, Completeness, Example Quality, Error Handling, Onboarding Friction, Consistency</div>
+          <div class="case-detail-item">Export scorecard as Jira ticket (wiki markup) or GitHub issue with collapsible evidence</div>
+          <div class="case-detail-item">Side-by-side mode: score two API docs and auto-pick the winner</div>
+        </div>
+        <div class="tool-btns">
+          <a href="https://huggingface.co/spaces/amogh-pm/api-dx-scorer" target="_blank" rel="noopener"
+             class="btn-primary" style="font-size:.85rem;padding:.6rem 1.3rem;"
+             onclick="gtag('event','tool_open',{event_category:'tools',event_label:'api_dx_scorer'})">
+            Try it live ↗
+          </a>
+          <a href="/projects/api-dx-scorer.html" class="btn-secondary" style="font-size:.85rem;padding:.6rem 1.3rem;">
+            Case study
+          </a>
+        </div>
+      </div>
+
+      <div class="tool-card placeholder">
+        <div style="font-size:2rem;margin-bottom:.75rem;">🔧</div>
+        <div style="font-weight:700;color:var(--muted);margin-bottom:.4rem;">Next tool in progress</div>
+        <div style="font-size:.82rem;color:var(--muted);">PRD quality scorer — same free stack.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- CONTACT -->
 <section id="contact">
   <div class="section-inner">
@@ -603,7 +667,6 @@
 </footer>
 
 <script>
-  // Hamburger menu
   function toggleMenu() {
     document.getElementById('navLinks').classList.toggle('open');
     document.getElementById('hamburger').classList.toggle('open');
@@ -613,7 +676,6 @@
     document.getElementById('hamburger').classList.remove('open');
   }
 
-  // Smooth active nav highlight
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.nav-links a');
   window.addEventListener('scroll', () => {
@@ -626,7 +688,6 @@
     });
   });
 
-  // Animate stat numbers on scroll
   const counters = document.querySelectorAll('.stat-num');
   const observer = new IntersectionObserver(entries => {
     entries.forEach(e => {
@@ -643,16 +704,11 @@
     observer.observe(c);
   });
 
-  // GA4 — track which sections visitors reach
   const sectionLabels = {
-    hero: 'Hero',
-    stats: 'Stats',
-    about: 'About',
-    casestudies: 'Featured Work',
-    partners: 'Partners',
-    experience: 'Experience',
-    skills: 'Skills',
-    contact: 'Contact'
+    hero: 'Hero', stats: 'Stats', about: 'About',
+    casestudies: 'Featured Work', partners: 'Partners',
+    experience: 'Experience', skills: 'Skills',
+    tools: 'PM Tools', contact: 'Contact'
   };
   const sectionsSeen = new Set();
   const sectionObserver = new IntersectionObserver(entries => {
@@ -668,7 +724,6 @@
   }, { threshold: 0.3 });
   document.querySelectorAll('section[id]').forEach(s => sectionObserver.observe(s));
 
-  // GA4 — track UTM source on load
   const params = new URLSearchParams(window.location.search);
   const utmSource = params.get('utm_source');
   if (utmSource) {
